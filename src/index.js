@@ -1,8 +1,8 @@
 var myaddress = "0x70BEc5dA4733F3435a4c41c8f0E19c4E0ce688D3";
-var contract = "0x4cfdcf5a568590709c1a6347f5adeac7498e134c";
+var contract = "0x4CFdcF5a568590709c1A6347f5adeAC7498E134c";
 var myamount = 0;
 var toaddress = "";
-var toamount = 0;
+var toamount = "0";
 
 var amountHTML = document.getElementById("balance");
 var toAdrHTML = document.getElementById("toAdr");
@@ -40,7 +40,7 @@ function refresh() {
         })
         .then(result => {
             myamount = result;
-            innerHTML = myamount.toString();
+            amountHTML.innerHTML = myamount;
         })
         .then(() => {
             // eslint-disable-next-line
@@ -86,29 +86,16 @@ async function transferBalance(
     var transferClause = transferMethod.asClause(toAddress, toAmount);
 
     var signerService = connex.vendor.sign("tx");
-    await signerService
+    signerService
         .signer(ownerAddress)
         .comment("token transfer " + toAmount + " wei.");
-    await signerService
-        .request([
-            {
-                to: toAddress,
-                value: toAmount,
-                data: "0x"
-            },
-            {
-                comment: "Hello Transfer Demo",
-                ...transferClause
-            }
-        ])
-        .then(result => {
-            alert("Success!");
-            return result;
-        })
-        .catch(err => {
-            alert("Failed!");
-            return err;
-        });
+    var transactionInfo = await signerService.request([
+        {
+            comment: "Hello Transfer Demo",
+            ...transferClause
+        }
+    ]);
+    return transactionInfo;
 }
 
 function transfer() {
